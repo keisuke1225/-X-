@@ -1,13 +1,17 @@
 import os
-import requests
+import asyncio
+from twikit import Client
 
-WEBHOOK_URL = os.environ["DISCORD_WEBHOOK"]
+async def main():
 
-requests.post(
-    WEBHOOK_URL,
-    json={
-        "content": "Bot接続テスト成功！"
-    }
-)
+    client = Client(language='ja')
 
-print("送信完了")
+    await client.login(
+        auth_info_1=os.environ["X_USERNAME"],
+        password=os.environ["X_PASSWORD"]
+    )
+
+    print("ログイン成功")
+
+if __name__ == "__main__":
+    asyncio.run(main())
