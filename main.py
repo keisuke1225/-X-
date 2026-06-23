@@ -1,7 +1,13 @@
+import os
 import re
 import requests
 
-url = "https://x.com/Sally___qq"
+WEBHOOK_URL = os.environ["DISCORD_WEBHOOK"]
+
+TARGET = "Sally___qq"
+FILE_NAME = "last_tweet.txt"
+
+url = f"https://x.com/{TARGET}"
 
 response = requests.get(
     url,
@@ -15,7 +21,44 @@ html = response.text
 
 matches = re.findall(r'/status/(\d+)', html)
 
-print("件数:", len(matches))
+if not matches:
+    raise Exception("ツイート取得失敗")
 
-if matches:
-    print("最新候補:", matches[0])
+latest_id = matches[0]
+
+try:
+    with open(FILE_NAME, "r") as f:
+        saved_id = f.read().strip()
+except FileNotFoundError:
+    saved_id = ""
+
+# 初回実行
+if saved_id == "":
+    with open(FILE_NAME, "w") as f:
+        f.write(latest_id)
+
+    print("初回登録")
+    exit()
+
+# 新規投稿検知
+if latest_id != saved_id:
+
+    tweet_url = f"https://x.com/{TARGET}/status/{latest_id}"
+
+    requests.post(
+        WEBHOOK_URL,
+        json={
+            "content":
+            f"【新しいポスト】\n{tweet_url}"
+        },
+        timeout=30
+    )
+
+    with open(FILE_NAME, "w") as f:
+        f.write(latest_id)
+
+    print("通知完了")
+
+else:
+
+    print("更新なし")
