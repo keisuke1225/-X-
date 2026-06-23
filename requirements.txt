@@ -1,2 +1,2 @@
 requests
-twikit
+git+https://github.com/d60/twikit.git
