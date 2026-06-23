@@ -1,17 +1,14 @@
-import os
-import asyncio
-from twikit import Client
+import requests
 
-async def main():
+url = "https://x.com/Sally___qq"
 
-    client = Client(language='ja')
+response = requests.get(
+    url,
+    headers={
+        "User-Agent": "Mozilla/5.0"
+    },
+    timeout=30
+)
 
-    await client.login(
-        auth_info_1=os.environ["X_USERNAME"],
-        password=os.environ["X_PASSWORD"]
-    )
-
-    print("ログイン成功")
-
-if __name__ == "__main__":
-    asyncio.run(main())
+print("status:", response.status_code)
+print(response.text[:500])
