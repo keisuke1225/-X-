@@ -24,8 +24,14 @@ matches = re.findall(r'/status/(\d+)', html)
 if not matches:
     raise Exception("ツイート取得失敗")
 
-latest_id = matches[0]
+tweet_ids = sorted(
+    set(matches),
+    key=int,
+    reverse=True
+)
 
+latest_id = tweet_ids[0]
+print("latest_id =", latest_id)
 try:
     with open(FILE_NAME, "r") as f:
         saved_id = f.read().strip()
