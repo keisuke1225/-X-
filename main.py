@@ -24,6 +24,15 @@ matches = re.findall(r'/status/(\d+)', html)
 if not matches:
     raise Exception("ツイート取得失敗")
 
+tweet_ids = list(dict.fromkeys(matches))
+
+print("取得したID一覧")
+for i, tweet_id in enumerate(tweet_ids[:20]):
+    print(i, tweet_id)
+
+latest_id = max(tweet_ids, key=int)
+
+print("latest_id =", latest_id)
 tweet_ids = sorted(
     set(matches),
     key=int,
