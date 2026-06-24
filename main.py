@@ -87,3 +87,4 @@ requests.post(
 
 print("テスト通知送信")
 print(tweet_ids[:20])
+PINNED_ID = "2055281567451566450"
