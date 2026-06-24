@@ -1,8 +1,8 @@
-name: Discord Test
+name: X Notify
 
 on:
   schedule:
-    - cron: "*/10 * * * *"
+    - cron: "*/5 * * * *"
 
   workflow_dispatch:
 
@@ -10,27 +10,32 @@ permissions:
   contents: write
 
 jobs:
-  test:
+
+  run:
 
     runs-on: ubuntu-latest
 
     steps:
 
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      - name: Install dependencies
-        run: pip install -r requirements.txt
+      - name: Install Python Packages
+        run: |
+          pip install -r requirements.txt
+
+      - name: Install Playwright
+        run: |
+          playwright install chromium
 
       - name: Run Bot
-        run: python main.py
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          python main.py
 
       - name: Save State
         run: |
