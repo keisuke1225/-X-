@@ -62,3 +62,12 @@ if latest_id != saved_id:
 else:
 
     print("更新なし")
+requests.post(
+    WEBHOOK_URL,
+    json={
+        "content": "Discord通知テスト成功"
+    },
+    timeout=30
+)
+
+print("テスト通知送信")
