@@ -1,51 +1,40 @@
 import os
 import re
 import requests
+from playwright.sync_api import sync_playwright
 
 WEBHOOK_URL = os.environ["DISCORD_WEBHOOK"]
 
 TARGET = "t_o_shimi_z"
 FILE_NAME = "last_tweet.txt"
 
-# 固定ツイートID
-PINNED_ID = "2055281567451566450"
+with sync_playwright() as p:
 
-url = f"https://x.com/{TARGET}"
+    browser = p.chromium.launch(headless=True)
 
-response = requests.get(
-    url,
-    headers={
-        "User-Agent": "Mozilla/5.0"
-    },
-    timeout=30
-)
+    page = browser.new_page()
 
-html = response.text
+    page.goto(
+        f"https://x.com/{TARGET}",
+        wait_until="networkidle",
+        timeout=60000
+    )
+
+    html = page.content()
+
+    browser.close()
 
 matches = re.findall(r'/status/(\d+)', html)
 
 if not matches:
     raise Exception("ツイート取得失敗")
 
-# 重複除去
 tweet_ids = list(dict.fromkeys(matches))
 
-# 固定ツイート除外
-tweet_ids = [
-    tweet_id
-    for tweet_id in tweet_ids
-    if tweet_id != PINNED_ID
-]
-
-if not tweet_ids:
-    raise Exception("固定ツイート以外が取得できません")
-
-# 一番大きいID = 最新ツイート
 latest_id = max(tweet_ids, key=int)
 
 print("latest_id =", latest_id)
 
-# 前回保存したID取得
 try:
     with open(FILE_NAME, "r") as f:
         saved_id = f.read().strip()
@@ -54,7 +43,6 @@ except FileNotFoundError:
 
 print("saved_id =", saved_id)
 
-# 初回実行
 if saved_id == "":
     with open(FILE_NAME, "w") as f:
         f.write(latest_id)
@@ -62,7 +50,6 @@ if saved_id == "":
     print("初回登録完了")
     exit()
 
-# 新規投稿検知
 if latest_id != saved_id:
 
     tweet_url = f"https://x.com/{TARGET}/status/{latest_id}"
@@ -70,12 +57,13 @@ if latest_id != saved_id:
     r = requests.post(
         WEBHOOK_URL,
         json={
-            "content": f"【{TARGET} 新規投稿】\n{tweet_url}"
+            "content":
+            f"【新しいポスト】\n{tweet_url}"
         },
         timeout=30
     )
 
-    print("Discord Status =", r.status_code)
+    print("Discord =", r.status_code)
 
     with open(FILE_NAME, "w") as f:
         f.write(latest_id)
@@ -84,4 +72,3 @@ if latest_id != saved_id:
 
 else:
     print("更新なし")
-print("2069738052210336057" in html)
