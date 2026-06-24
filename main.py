@@ -4,7 +4,7 @@ import requests
 
 WEBHOOK_URL = os.environ["DISCORD_WEBHOOK"]
 
-TARGET = "Sally___qq"
+TARGET = "t_o_shimi_z"
 FILE_NAME = "last_tweet.txt"
 
 url = f"https://x.com/{TARGET}"
