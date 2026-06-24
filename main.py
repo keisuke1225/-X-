@@ -86,3 +86,4 @@ requests.post(
 )
 
 print("テスト通知送信")
+print(tweet_ids[:20])
