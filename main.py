@@ -84,4 +84,4 @@ if latest_id != saved_id:
 
 else:
     print("更新なし")
-print(tweet_ids[:20])
+print("2069738052210336057" in html)
